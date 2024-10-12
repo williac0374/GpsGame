@@ -6,12 +6,33 @@
     <title>Random Target Locator</title>
     <link rel="stylesheet" href="https://unpkg.com/leaflet/dist/leaflet.css" />
     <style>
+        /* Make sure the map and fullscreen button fill the screen */
+        body, html {
+            margin: 0;
+            padding: 0;
+            height: 100%;
+            overflow: hidden;
+        }
         #map {
-            height: 100vh;
+            height: 100%;
+            width: 100%;
+        }
+        /* Fullscreen button styles */
+        #fullscreen-btn {
+            position: absolute;
+            top: 10px;
+            right: 10px;
+            padding: 10px 15px;
+            background-color: rgba(255, 255, 255, 0.8);
+            border: 1px solid #ccc;
+            cursor: pointer;
+            z-index: 1000;
         }
     </style>
 </head>
 <body>
+    <!-- Fullscreen Button -->
+    <div id="fullscreen-btn">Fullscreen</div>
     <div id="map"></div>
 
     <script src="https://unpkg.com/leaflet/dist/leaflet.js"></script>
@@ -89,6 +110,28 @@
             }
         }, error => {
             console.error("Error getting location:", error);
+        });
+
+        // Fullscreen functionality
+        const fullscreenButton = document.getElementById('fullscreen-btn');
+
+        fullscreenButton.addEventListener('click', () => {
+            if (!document.fullscreenElement) {
+                document.documentElement.requestFullscreen();
+                fullscreenButton.textContent = 'Exit Fullscreen';
+            } else {
+                if (document.exitFullscreen) {
+                    document.exitFullscreen();
+                    fullscreenButton.textContent = 'Fullscreen';
+                }
+            }
+        });
+
+        // Handle fullscreen change events to toggle button text
+        document.addEventListener('fullscreenchange', () => {
+            if (!document.fullscreenElement) {
+                fullscreenButton.textContent = 'Fullscreen';
+            }
         });
     </script>
 </body>
