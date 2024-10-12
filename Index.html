@@ -44,10 +44,10 @@
             attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
         }).addTo(map);
 
-        let targetMarker = null;
+        var targetMarker = null;
         let userMarker = null;  // For the user's current location
         let previousPosition = null;
-        const initialTargetRadius = 50; // Initial value for target radius in meters
+        const initialTargetRadius = 5; // Initial value for target radius in meters
         let targetRadius = initialTargetRadius; // Current target radius
         const halfMile = 804.672; // Meters
         const radiusIncrementFactor = 0.1; // Adjust to control how quickly radius grows
@@ -83,7 +83,7 @@
             if (userMarker) {
                 userMarker.setLatLng([userLat, userLon]);
             } else {
-                userMarker = L.circle([userLat, userLon], { radius: 10, color: 'blue' }).addTo(map);
+                userMarker = L.circle([userLat, userLon], { radius: 10 + targetRadius, color: 'blue' }).addTo(map);
             }
 
             // Calculate distance from the previous position and increase target radius accordingly
@@ -110,6 +110,10 @@
             }
         }, error => {
             console.error("Error getting location:", error);
+        }, options => {
+              enableHighAccuracy: true,
+  			  timeout: 5000, // Maximum time to wait for a position (in milliseconds)
+              maximumAge: 0 // Don't use cached position data
         });
 
         // Fullscreen functionality
