@@ -24,8 +24,12 @@
         }).addTo(map);
 
         let targetMarker = null;
-        const targetRadius = 50; // Meters
+        let userMarker = null;  // For the user's current location
+        let previousPosition = null;
+        const initialTargetRadius = 50; // Initial value for target radius in meters
+        let targetRadius = initialTargetRadius; // Current target radius
         const halfMile = 804.672; // Meters
+        const radiusIncrementFactor = 0.1; // Adjust to control how quickly radius grows
 
         // Function to generate random latitude and longitude within half a mile
         function getRandomLocation(lat, lon, radius) {
@@ -47,15 +51,26 @@
             return [targetLat, targetLon];
         }
 
-        // Watch the user's location and check distance from target
+        // Watch the user's location and update the marker
         let targetPosition = null;
         navigator.geolocation.watchPosition(position => {
             const userLat = position.coords.latitude;
             const userLon = position.coords.longitude;
             map.setView([userLat, userLon], 15);
 
-            // Place user's location marker
-            L.circle([userLat, userLon], { radius: 10, color: 'blue' }).addTo(map);
+            // If userMarker exists, move it. Otherwise, create it.
+            if (userMarker) {
+                userMarker.setLatLng([userLat, userLon]);
+            } else {
+                userMarker = L.circle([userLat, userLon], { radius: 10, color: 'blue' }).addTo(map);
+            }
+
+            // Calculate distance from the previous position and increase target radius accordingly
+            if (previousPosition) {
+                const distanceMoved = map.distance([userLat, userLon], previousPosition);
+                targetRadius += distanceMoved * radiusIncrementFactor;
+            }
+            previousPosition = [userLat, userLon];
 
             // If no target, generate a new one
             if (!targetPosition) {
@@ -64,6 +79,11 @@
                 const distance = map.distance([userLat, userLon], targetPosition);
                 if (distance <= targetRadius) {
                     alert("Target reached! Generating new target.");
+                    
+                    // Reset targetRadius to initial value
+                    targetRadius = initialTargetRadius;
+
+                    // Set a new target
                     targetPosition = setRandomTarget(userLat, userLon);
                 }
             }
