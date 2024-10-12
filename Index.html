@@ -1,0 +1,75 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Random Target Locator</title>
+    <link rel="stylesheet" href="https://unpkg.com/leaflet/dist/leaflet.css" />
+    <style>
+        #map {
+            height: 100vh;
+        }
+    </style>
+</head>
+<body>
+    <div id="map"></div>
+
+    <script src="https://unpkg.com/leaflet/dist/leaflet.js"></script>
+    <script>
+        const map = L.map('map').setView([51.505, -0.09], 13);  // Default map view
+
+        // Add OpenStreetMap layer
+        L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+            attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
+        }).addTo(map);
+
+        let targetMarker = null;
+        const targetRadius = 50; // Meters
+        const halfMile = 804.672; // Meters
+
+        // Function to generate random latitude and longitude within half a mile
+        function getRandomLocation(lat, lon, radius) {
+            const r = radius / 111300; // Convert radius from meters to degrees
+            const u = Math.random();
+            const v = Math.random();
+            const w = r * Math.sqrt(u);
+            const t = 2 * Math.PI * v;
+            const newLat = w * Math.cos(t) + lat;
+            const newLon = w * Math.sin(t) / Math.cos(lat) + lon;
+            return [newLat, newLon];
+        }
+
+        // Function to set a new random target
+        function setRandomTarget(lat, lon) {
+            if (targetMarker) map.removeLayer(targetMarker);
+            const [targetLat, targetLon] = getRandomLocation(lat, lon, halfMile);
+            targetMarker = L.circle([targetLat, targetLon], { radius: targetRadius, color: 'red' }).addTo(map);
+            return [targetLat, targetLon];
+        }
+
+        // Watch the user's location and check distance from target
+        let targetPosition = null;
+        navigator.geolocation.watchPosition(position => {
+            const userLat = position.coords.latitude;
+            const userLon = position.coords.longitude;
+            map.setView([userLat, userLon], 15);
+
+            // Place user's location marker
+            L.circle([userLat, userLon], { radius: 10, color: 'blue' }).addTo(map);
+
+            // If no target, generate a new one
+            if (!targetPosition) {
+                targetPosition = setRandomTarget(userLat, userLon);
+            } else {
+                const distance = map.distance([userLat, userLon], targetPosition);
+                if (distance <= targetRadius) {
+                    alert("Target reached! Generating new target.");
+                    targetPosition = setRandomTarget(userLat, userLon);
+                }
+            }
+        }, error => {
+            console.error("Error getting location:", error);
+        });
+    </script>
+</body>
+</html>
