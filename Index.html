@@ -21,7 +21,7 @@
 
     <script>
         let map, currentMarker, targetCircle;
-        let targetRadius = 50; // Start with a small radius
+        let targetRadius = 10; // Start with a small radius
         let targetLatLng;
 
         // Initialize the map
@@ -85,7 +85,7 @@
 
         // Reset target circle and position it at a new random location within a quarter mile
         function resetTarget(currentLatLng) {
-            targetRadius = 50; // Reset radius
+            targetRadius = 10; // Reset radius
 
             const quarterMileInMeters = 402.336; // Approx. 1/4 mile in meters
             const randomDistance = Math.random() * quarterMileInMeters;
@@ -113,7 +113,7 @@
 
         // Gradually increase the size of the target circle
         function increaseTargetSize() {
-            targetRadius += 5; // Increase the radius
+            targetRadius += 0.1; // Increase the radius
             targetCircle.setRadius(targetRadius);
         }
 
