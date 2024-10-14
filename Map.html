@@ -13,8 +13,8 @@
         /* Style for sword and monster markers */
         .sword-icon, .monster-icon {
             background-size: cover;
-            width: 40px;
-            height: 40px;
+            width: 20px;
+            height: 20px;
             cursor: pointer;
         }
     </style>
@@ -55,7 +55,7 @@
                 // Create sword marker (user's location)
                 const swordIcon = L.icon({
                     iconUrl: 'sword.png', // URL to sword image
-                    iconSize: [40, 40]
+                    iconSize: [20, 20]
                 });
 
                 userMarker = L.marker([userPosition.lat, userPosition.lng], { icon: swordIcon }).addTo(map);
@@ -78,7 +78,7 @@
 
             const monsterIcon = L.icon({
                 iconUrl: 'orc.png', // URL to monster image
-                iconSize: [40, 40]
+                iconSize: [20, 20]
             });
 
             monsterMarker = L.marker([randomPoint.lat, randomPoint.lng], { icon: monsterIcon }).addTo(map);
