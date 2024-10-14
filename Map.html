@@ -3,30 +3,47 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Leaflet GPS Location with Target</title>
-
-    <!-- Leaflet CSS and JS -->
-    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
-    <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
-
+    <title>Map with Sword and Monster</title>
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.3/dist/leaflet.css" />
     <style>
         #map {
             height: 100vh;
             width: 100%;
         }
+        /* Style for sword and monster markers */
+        .sword-icon, .monster-icon {
+            background-size: cover;
+            width: 40px;
+            height: 40px;
+            cursor: pointer;
+        }
     </style>
 </head>
 <body>
     <div id="map"></div>
+    <audio id="powerup-sound" src="Powerup.mp3"></audio>
 
+    <script src="https://unpkg.com/leaflet@1.9.3/dist/leaflet.js"></script>
     <script>
-        let map, currentMarker, targetCircle;
-        let targetRadius = 10; // Start with a small radius
-        let targetLatLng;
+        let map, userMarker, monsterMarker, powerCircle;
+        let userPosition = { lat: 0, lng: 0 };
+        let startPos = null;
+        let power = 0;
+        const monsterDistanceThreshold = 15; // meters
+        const halfMileInMeters = 804.672; // meters
 
-        // Initialize the map
         function initMap() {
-            map = L.map('map').setView([0, 0], 16);
+            navigator.geolocation.getCurrentPosition(function (position) {
+                userPosition = {
+                    lat: position.coords.latitude,
+                    lng: position.coords.longitude
+                };
+
+                // Save the initial position as startPos
+                startPos = { lat: userPosition.lat, lng: userPosition.lng };
+
+                // Initialize the map centered on user's location
+                map = L.map('map').setView([userPosition.lat, userPosition.lng], 15);
 
                 // Add OpenStreetMap tiles
                 L.tileLayer('https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}', {
@@ -34,91 +51,119 @@
                     attribution: 'Tiles © Esri &mdash; Source: Esri, i-cubed, USDA, USGS, AEX, GeoEye, Getmapping, Aerogrid, IGN, IGP, UPR-EGP, and the GIS User Community'
                 }).addTo(map);
 
-            if (navigator.geolocation) {
-                navigator.geolocation.watchPosition(updateLocation, handleError, {
-                    enableHighAccuracy: true,
-                    maximumAge: 0,
-                    timeout: 5000
+                // Create sword marker (user's location)
+                const swordIcon = L.icon({
+                    iconUrl: 'sword.png', // URL to sword image
+                    iconSize: [40, 40]
                 });
-            } else {
-                alert("Geolocation is not supported by this browser.");
-            }
+
+                userMarker = L.marker([userPosition.lat, userPosition.lng], { icon: swordIcon }).addTo(map);
+
+                // Create initial monster marker at a random location
+                placeMonsterMarker();
+
+                // Continuously update user's position and check proximity to monster
+                watchUserPosition();
+            });
         }
 
-        // Update location when position changes
-        function updateLocation(position) {
-            const lat = position.coords.latitude;
-            const lng = position.coords.longitude;
-            const currentLatLng = [lat, lng];
+        // Generate a random point within half a mile on the map
+        function placeMonsterMarker() {
+            const randomPoint = generateRandomPoint(userPosition, halfMileInMeters);
 
-            if (!currentMarker) {
-                // Add a marker for the current location
-                currentMarker = L.circleMarker(currentLatLng, {
-                    radius: 2,
-                    color: 'green',
-                    fillColor: 'green',
-                    fillOpacity: 1
+            if (monsterMarker) {
+                map.removeLayer(monsterMarker); // Remove the previous monster marker
+            }
+
+            const monsterIcon = L.icon({
+                iconUrl: 'orc.png', // URL to monster image
+                iconSize: [40, 40]
+            });
+
+            monsterMarker = L.marker([randomPoint.lat, randomPoint.lng], { icon: monsterIcon }).addTo(map);
+        }
+
+        // Function to continuously update the user's location and check distance
+        function watchUserPosition() {
+            navigator.geolocation.watchPosition(function (position) {
+                userPosition = {
+                    lat: position.coords.latitude,
+                    lng: position.coords.longitude
+                };
+
+                userMarker.setLatLng([userPosition.lat, userPosition.lng]);
+
+                // Calculate distance between startPos and current position (power)
+                power = calculateDistance(startPos, userPosition);
+
+                // If there's already a circle, remove it before adding a new one
+                if (powerCircle) {
+                    map.removeLayer(powerCircle);
+                }
+
+                // Draw a blue circle centered on the current position with radius equal to power
+                powerCircle = L.circle([userPosition.lat, userPosition.lng], {
+                    color: 'blue',
+                    fillColor: '#30f',
+                    fillOpacity: 0.4,
+                    radius: power // Radius in meters
                 }).addTo(map);
 
-                map.setView(currentLatLng);
+                // Check if the monster is within the blue circle
+                const distanceToMonster = calculateDistance(userPosition, monsterMarker.getLatLng());
 
-                // Initialize target circle at a random location
-                resetTarget(currentLatLng);
-            } else {
-                // Move the current marker
-                currentMarker.setLatLng(currentLatLng);
-            }
+                if (distanceToMonster <= power) {
+                    document.getElementById('powerup-sound').play(); // Play the power-up sound
+                    placeMonsterMarker(); // Move monster to new random location
 
-            // Increase target circle size as the user moves
-            increaseTargetSize();
-
-            // Check if the current marker intersects the target circle
-            if (map.distance(currentLatLng, targetLatLng) < targetRadius) {
-                resetTarget(currentLatLng);
-            }
+                    // Reset startPos to current position and power to 0
+                    startPos = { lat: userPosition.lat, lng: userPosition.lng };
+                    power = 0;
+                }
+            });
         }
 
-        // Handle any geolocation errors
-        function handleError(error) {
-            console.warn(`ERROR(${error.code}): ${error.message}`);
+        // Generate a random point within a given radius (meters) from the origin
+        function generateRandomPoint(origin, radius) {
+            const y0 = origin.lat;
+            const x0 = origin.lng;
+
+            const rd = radius / 111300; // 111300 meters in one degree
+
+            const u = Math.random();
+            const v = Math.random();
+
+            const w = rd * Math.sqrt(u);
+            const t = 2 * Math.PI * v;
+            const x = w * Math.cos(t);
+            const y = w * Math.sin(t);
+
+            const newX = x + x0;
+            const newY = y + y0;
+
+            return { lat: newY, lng: newX };
         }
 
-        // Reset target circle and position it at a new random location within a quarter mile
-        function resetTarget(currentLatLng) {
-            targetRadius = 10; // Reset radius
+        // Function to calculate distance between two points in meters
+        function calculateDistance(point1, point2) {
+            const R = 6371000; // Radius of the Earth in meters
+            const dLat = toRad(point2.lat - point1.lat);
+            const dLon = toRad(point2.lng - point1.lng);
+            const lat1 = toRad(point1.lat);
+            const lat2 = toRad(point2.lat);
 
-            const quarterMileInMeters = 402.336; // Approx. 1/4 mile in meters
-            const randomDistance = Math.random() * quarterMileInMeters;
-            const randomAngle = Math.random() * 2 * Math.PI;
+            const a = Math.sin(dLat / 2) * Math.sin(dLat / 2) +
+                      Math.sin(dLon / 2) * Math.sin(dLon / 2) * Math.cos(lat1) * Math.cos(lat2);
+            const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
 
-            const offsetLat = randomDistance * Math.cos(randomAngle) / 111320; // Convert meters to degrees latitude
-            const offsetLng = randomDistance * Math.sin(randomAngle) / (111320 * Math.cos(currentLatLng[0] * (Math.PI / 180))); // Adjust for longitude distance
-
-            targetLatLng = [currentLatLng[0] + offsetLat, currentLatLng[1] + offsetLng];
-
-            if (!targetCircle) {
-                // Create the target circle
-                targetCircle = L.circle(targetLatLng, {
-                    color: 'red',
-                    fillColor: '#f03',
-                    fillOpacity: 0.5,
-                    radius: targetRadius
-                }).addTo(map);
-            } else {
-                // Move the target circle to the new position
-                targetCircle.setLatLng(targetLatLng);
-                targetCircle.setRadius(targetRadius);
-            }
+            return R * c; // Distance in meters
         }
 
-        // Gradually increase the size of the target circle
-        function increaseTargetSize() {
-            targetRadius += 0.1; // Increase the radius
-            targetCircle.setRadius(targetRadius);
+        function toRad(deg) {
+            return deg * (Math.PI / 180);
         }
 
-        // Load the map when the page loads
-        window.onload = initMap;
+        initMap(); // Initialize the map
     </script>
 </body>
 </html>
