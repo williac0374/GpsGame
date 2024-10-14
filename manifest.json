@@ -1,13 +1,14 @@
 {
-  "name": "Urban Ranger",
-  "short_name": "UrbanRanger",
+  "name": "Sword and Monster",
+  "short_name": "S&M",
+  "description": "A map-based sword and monster game",
   "start_url": "/Map.html",
   "display": "standalone",
   "background_color": "#ffffff",
   "theme_color": "#000000",
   "icons": [
-    {
-      "src": "/orc.png",
+   {
+      "src": "/images/icon-512x512.png",
       "sizes": "512x512",
       "type": "image/png"
     }
