@@ -25,8 +25,10 @@
 
     <script src="https://unpkg.com/leaflet@1.9.3/dist/leaflet.js"></script>
     <script>
-        let map, userMarker, monsterMarker;
+        let map, userMarker, monsterMarker, powerCircle;
         let userPosition = { lat: 0, lng: 0 };
+        let startPos = null;
+        let power = 0;
         const monsterDistanceThreshold = 15; // meters
         const halfMileInMeters = 804.672; // meters
 
@@ -37,15 +39,17 @@
                     lng: position.coords.longitude
                 };
 
+                // Set startPos as the initial user location
+                startPos = { ...userPosition };
+
                 // Initialize the map centered on user's location
                 map = L.map('map').setView([userPosition.lat, userPosition.lng], 15);
 
                 // Add OpenStreetMap tiles
                 L.tileLayer('https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}', {
-    maxZoom: 19,
-    attribution: 'Tiles © Esri &mdash; Source: Esri, i-cubed, USDA, USGS, AEX, GeoEye, Getmapping, Aerogrid, IGN, IGP, UPR-EGP, and the GIS User Community'
-}).addTo(map);
-
+                    maxZoom: 19,
+                    attribution: 'Tiles © Esri &mdash; Source: Esri, i-cubed, USDA, USGS, AEX, GeoEye, Getmapping, Aerogrid, IGN, IGP, UPR-EGP, and the GIS User Community'
+                }).addTo(map);
 
                 // Create sword marker (user's location)
                 const swordIcon = L.icon({
@@ -89,12 +93,24 @@
 
                 userMarker.setLatLng([userPosition.lat, userPosition.lng]);
 
-                // Check the distance between user and monster
-                const distance = calculateDistance(userPosition, monsterMarker.getLatLng());
+                // Calculate the power (distance from the startPos)
+                power = calculateDistance(userPosition, startPos);
 
-                if (distance <= monsterDistanceThreshold) {
+                // Update or add the blue circle around the user's current location
+                if (powerCircle) {
+                    powerCircle.setLatLng([userPosition.lat, userPosition.lng]).setRadius(power);
+                } else {
+                    powerCircle = L.circle([userPosition.lat, userPosition.lng], { radius: power, color: 'blue' }).addTo(map);
+                }
+
+                // Check the distance between the user and the monster
+                const distanceToMonster = calculateDistance(userPosition, monsterMarker.getLatLng());
+
+                if (distanceToMonster <= power) {
                     document.getElementById('powerup-sound').play(); // Play the power-up sound
                     placeMonsterMarker(); // Move monster to new random location
+                    startPos = { ...userPosition }; // Reset startPos to the current location
+                    power = 0; // Reset power to 0
                 }
             });
         }
