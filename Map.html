@@ -55,7 +55,7 @@
                 // Create sword marker (user's location)
                 const swordIcon = L.icon({
                     iconUrl: 'sword.png', // URL to sword image
-                    iconSize: [20, 20]
+                    iconSize: [30, 30]
                 });
 
                 userMarker = L.marker([userPosition.lat, userPosition.lng], { icon: swordIcon }).addTo(map);
@@ -78,7 +78,7 @@
 
             const monsterIcon = L.icon({
                 iconUrl: 'orc.png', // URL to monster image
-                iconSize: [20, 20]
+                iconSize: [30, 30]
             });
 
             monsterMarker = L.marker([randomPoint.lat, randomPoint.lng], { icon: monsterIcon }).addTo(map);
