@@ -13,8 +13,8 @@
         /* Style for sword and monster markers */
         .sword-icon, .monster-icon {
             background-size: cover;
-            width: 20px;
-            height: 20px;
+            width: 40px;
+            height: 40px;
             cursor: pointer;
         }
     </style>
@@ -31,6 +31,7 @@
         let power = 0;
         const monsterDistanceThreshold = 15; // meters
         const halfMileInMeters = 804.672; // meters
+        const startResetDistance = 10; // meters threshold to reset start position
 
         function initMap() {
             navigator.geolocation.getCurrentPosition(function (position) {
@@ -39,7 +40,7 @@
                     lng: position.coords.longitude
                 };
 
-                // Save the initial position as startPos
+                // Set the initial start position
                 startPos = { lat: userPosition.lat, lng: userPosition.lng };
 
                 // Initialize the map centered on user's location
@@ -93,8 +94,14 @@
 
                 userMarker.setLatLng([userPosition.lat, userPosition.lng]);
 
-                // Calculate distance between startPos and current position (power)
-                power = calculateDistance(startPos, userPosition);
+                // Calculate distance between startPos and current position
+                const distanceFromStart = calculateDistance(startPos, userPosition);
+
+                // If distance is greater than 10 meters, reset startPos to the current position and increment power by 5
+                if (distanceFromStart > startResetDistance) {
+                    startPos = { lat: userPosition.lat, lng: userPosition.lng };
+                    power += 5;
+                }
 
                 // If there's already a circle, remove it before adding a new one
                 if (powerCircle) {
@@ -116,7 +123,7 @@
                     document.getElementById('powerup-sound').play(); // Play the power-up sound
                     placeMonsterMarker(); // Move monster to new random location
 
-                    // Reset startPos to current position and power to 0
+                    // Reset startPos to current position and reset power to 0
                     startPos = { lat: userPosition.lat, lng: userPosition.lng };
                     power = 0;
                 }
