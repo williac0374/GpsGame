@@ -3,73 +3,142 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Random Target Locator</title>
-    <link rel="stylesheet" href="https://unpkg.com/leaflet/dist/leaflet.css" />
+    <title>Map with Sword and Monster</title>
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.3/dist/leaflet.css" />
     <style>
         #map {
             height: 100vh;
+            width: 100%;
+        }
+        /* Style for sword and monster markers */
+        .sword-icon, .monster-icon {
+            background-size: cover;
+            width: 40px;
+            height: 40px;
+            cursor: pointer;
         }
     </style>
 </head>
 <body>
     <div id="map"></div>
+    <audio id="powerup-sound" src="Powerup.mp3"></audio>
 
-    <script src="https://unpkg.com/leaflet/dist/leaflet.js"></script>
+    <script src="https://unpkg.com/leaflet@1.9.3/dist/leaflet.js"></script>
     <script>
-        const map = L.map('map').setView([51.505, -0.09], 13);  // Default map view
+        let map, userMarker, monsterMarker;
+        let userPosition = { lat: 0, lng: 0 };
+        const monsterDistanceThreshold = 15; // meters
+        const halfMileInMeters = 804.672; // meters
 
-        // Add OpenStreetMap layer
-        L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
-            attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
-        }).addTo(map);
+        function initMap() {
+            navigator.geolocation.getCurrentPosition(function (position) {
+                userPosition = {
+                    lat: position.coords.latitude,
+                    lng: position.coords.longitude
+                };
 
-        let targetMarker = null;
-        const targetRadius = 50; // Meters
-        const halfMile = 804.672; // Meters
+                // Initialize the map centered on user's location
+                map = L.map('map').setView([userPosition.lat, userPosition.lng], 15);
 
-        // Function to generate random latitude and longitude within half a mile
-        function getRandomLocation(lat, lon, radius) {
-            const r = radius / 111300; // Convert radius from meters to degrees
+                // Add OpenStreetMap tiles
+                L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+                    maxZoom: 19,
+                    attribution: '© OpenStreetMap'
+                }).addTo(map);
+
+                // Create sword marker (user's location)
+                const swordIcon = L.icon({
+                    iconUrl: 'sword.png', // URL to sword image
+                    iconSize: [40, 40]
+                });
+
+                userMarker = L.marker([userPosition.lat, userPosition.lng], { icon: swordIcon }).addTo(map);
+
+                // Create initial monster marker at a random location
+                placeMonsterMarker();
+
+                // Continuously update user's position and check proximity to monster
+                watchUserPosition();
+            });
+        }
+
+        // Generate a random point within half a mile on the map
+        function placeMonsterMarker() {
+            const randomPoint = generateRandomPoint(userPosition, halfMileInMeters);
+
+            if (monsterMarker) {
+                map.removeLayer(monsterMarker); // Remove the previous monster marker
+            }
+
+            const monsterIcon = L.icon({
+                iconUrl: 'orc.png', // URL to monster image
+                iconSize: [40, 40]
+            });
+
+            monsterMarker = L.marker([randomPoint.lat, randomPoint.lng], { icon: monsterIcon }).addTo(map);
+        }
+
+        // Function to continuously update the user's location and check distance
+        function watchUserPosition() {
+            navigator.geolocation.watchPosition(function (position) {
+                userPosition = {
+                    lat: position.coords.latitude,
+                    lng: position.coords.longitude
+                };
+
+                userMarker.setLatLng([userPosition.lat, userPosition.lng]);
+
+                // Check the distance between user and monster
+                const distance = calculateDistance(userPosition, monsterMarker.getLatLng());
+
+                if (distance <= monsterDistanceThreshold) {
+                    document.getElementById('powerup-sound').play(); // Play the power-up sound
+                    placeMonsterMarker(); // Move monster to new random location
+                }
+            });
+        }
+
+        // Generate a random point within a given radius (meters) from the origin
+        function generateRandomPoint(origin, radius) {
+            const y0 = origin.lat;
+            const x0 = origin.lng;
+
+            const rd = radius / 111300; // 111300 meters in one degree
+
             const u = Math.random();
             const v = Math.random();
-            const w = r * Math.sqrt(u);
+
+            const w = rd * Math.sqrt(u);
             const t = 2 * Math.PI * v;
-            const newLat = w * Math.cos(t) + lat;
-            const newLon = w * Math.sin(t) / Math.cos(lat) + lon;
-            return [newLat, newLon];
+            const x = w * Math.cos(t);
+            const y = w * Math.sin(t);
+
+            const newX = x + x0;
+            const newY = y + y0;
+
+            return { lat: newY, lng: newX };
         }
 
-        // Function to set a new random target
-        function setRandomTarget(lat, lon) {
-            if (targetMarker) map.removeLayer(targetMarker);
-            const [targetLat, targetLon] = getRandomLocation(lat, lon, halfMile);
-            targetMarker = L.circle([targetLat, targetLon], { radius: targetRadius, color: 'red' }).addTo(map);
-            return [targetLat, targetLon];
+        // Function to calculate distance between two points in meters
+        function calculateDistance(point1, point2) {
+            const R = 6371000; // Radius of the Earth in meters
+            const dLat = toRad(point2.lat - point1.lat);
+            const dLon = toRad(point2.lng - point1.lng);
+            const lat1 = toRad(point1.lat);
+            const lat2 = toRad(point2.lat);
+
+            const a = Math.sin(dLat / 2) * Math.sin(dLat / 2) +
+                      Math.sin(dLon / 2) * Math.sin(dLon / 2) * Math.cos(lat1) * Math.cos(lat2);
+            const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
+
+            return R * c; // Distance in meters
         }
 
-        // Watch the user's location and check distance from target
-        let targetPosition = null;
-        navigator.geolocation.watchPosition(position => {
-            const userLat = position.coords.latitude;
-            const userLon = position.coords.longitude;
-            map.setView([userLat, userLon], 15);
+        function toRad(deg) {
+            return deg * (Math.PI / 180);
+        }
 
-            // Place user's location marker
-            L.circle([userLat, userLon], { radius: 10, color: 'blue' }).addTo(map);
-
-            // If no target, generate a new one
-            if (!targetPosition) {
-                targetPosition = setRandomTarget(userLat, userLon);
-            } else {
-                const distance = map.distance([userLat, userLon], targetPosition);
-                if (distance <= targetRadius) {
-                    alert("Target reached! Generating new target.");
-                    targetPosition = setRandomTarget(userLat, userLon);
-                }
-            }
-        }, error => {
-            console.error("Error getting location:", error);
-        });
+        initMap(); // Initialize the map
     </script>
 </body>
 </html>
