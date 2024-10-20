@@ -9,9 +9,25 @@
     <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
     <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
 
+    <!-- Web App Manifest -->
+    <link rel="manifest" href="/manifest.json">
+
+    <!-- PWA Metadata -->
+    <meta name="theme-color" content="#ffffff">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <link rel="apple-touch-icon" href="/icons/icon-192x192.png">
+
     <style>
         #map {
             height: 100vh;
+            width: 100%;
+            margin: 0;
+        }
+        body, html {
+            margin: 0;
+            padding: 0;
+            height: 100%;
             width: 100%;
         }
     </style>
@@ -21,14 +37,12 @@
 
     <script>
         let map, currentMarker, targetCircle;
-        let targetRadius = 10; // Start with a small radius
+        let targetRadius = 10;
         let targetLatLng;
 
-        // Initialize the map
         function initMap() {
             map = L.map('map').setView([0, 0], 16);
 
-            // Set up the OpenStreetMap tile layer
             L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
                 maxZoom: 19,
                 attribution: '© OpenStreetMap'
@@ -45,14 +59,12 @@
             }
         }
 
-        // Update location when position changes
         function updateLocation(position) {
             const lat = position.coords.latitude;
             const lng = position.coords.longitude;
             const currentLatLng = [lat, lng];
 
             if (!currentMarker) {
-                // Add a marker for the current location
                 currentMarker = L.circleMarker(currentLatLng, {
                     radius: 2,
                     color: 'green',
@@ -62,42 +74,35 @@
 
                 map.setView(currentLatLng);
 
-                // Initialize target circle at a random location
                 resetTarget(currentLatLng);
             } else {
-                // Move the current marker
                 currentMarker.setLatLng(currentLatLng);
             }
 
-            // Increase target circle size as the user moves
             increaseTargetSize();
 
-            // Check if the current marker intersects the target circle
             if (map.distance(currentLatLng, targetLatLng) < targetRadius) {
                 resetTarget(currentLatLng);
             }
         }
 
-        // Handle any geolocation errors
         function handleError(error) {
             console.warn(`ERROR(${error.code}): ${error.message}`);
         }
 
-        // Reset target circle and position it at a new random location within a quarter mile
         function resetTarget(currentLatLng) {
-            targetRadius = 10; // Reset radius
+            targetRadius = 10;
 
-            const quarterMileInMeters = 402.336; // Approx. 1/4 mile in meters
+            const quarterMileInMeters = 402.336;
             const randomDistance = Math.random() * quarterMileInMeters;
             const randomAngle = Math.random() * 2 * Math.PI;
 
-            const offsetLat = randomDistance * Math.cos(randomAngle) / 111320; // Convert meters to degrees latitude
-            const offsetLng = randomDistance * Math.sin(randomAngle) / (111320 * Math.cos(currentLatLng[0] * (Math.PI / 180))); // Adjust for longitude distance
+            const offsetLat = randomDistance * Math.cos(randomAngle) / 111320;
+            const offsetLng = randomDistance * Math.sin(randomAngle) / (111320 * Math.cos(currentLatLng[0] * (Math.PI / 180)));
 
             targetLatLng = [currentLatLng[0] + offsetLat, currentLatLng[1] + offsetLng];
 
             if (!targetCircle) {
-                // Create the target circle
                 targetCircle = L.circle(targetLatLng, {
                     color: 'red',
                     fillColor: '#f03',
@@ -105,19 +110,16 @@
                     radius: targetRadius
                 }).addTo(map);
             } else {
-                // Move the target circle to the new position
                 targetCircle.setLatLng(targetLatLng);
                 targetCircle.setRadius(targetRadius);
             }
         }
 
-        // Gradually increase the size of the target circle
         function increaseTargetSize() {
-            targetRadius += 0.1; // Increase the radius
+            targetRadius += 0.1;
             targetCircle.setRadius(targetRadius);
         }
 
-        // Load the map when the page loads
         window.onload = initMap;
     </script>
 </body>
