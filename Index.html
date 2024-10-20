@@ -23,10 +23,11 @@
     // Initialize the map and set view to a default location
     var map = L.map('map').setView([0, 0], 2);
 
-    // Add a satellite layer to the map using OpenStreetMap
-    L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
-        maxZoom: 19
-    }).addTo(map);
+    // Add OpenStreetMap tiles
+                L.tileLayer('https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}', {
+                    maxZoom: 19,
+                    attribution: 'Tiles © Esri &mdash; Source: Esri, i-cubed, USDA, USGS, AEX, GeoEye, Getmapping, Aerogrid, IGN, IGP, UPR-EGP, and the GIS User Community'
+                }).addTo(map);
 
     // Declare a variable to hold the user's marker
     var userMarker = null;
