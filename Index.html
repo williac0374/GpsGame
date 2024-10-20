@@ -28,12 +28,24 @@
         maxZoom: 19
     }).addTo(map);
 
-    // Add a geolocation tracking feature
+    // Declare a variable to hold the user's marker
+    var userMarker = null;
+
+    // Function to update the location marker
     function onLocationFound(e) {
-        var radius = e.accuracy;
-        L.marker(e.latlng).addTo(map)
-            .bindPopup("You are within " + radius + " meters from this point").openPopup();
-        L.circle(e.latlng, radius).addTo(map);
+        var latlng = e.latlng;
+
+        // If the marker doesn't exist yet, create it
+        if (!userMarker) {
+            userMarker = L.marker(latlng).addTo(map)
+                .bindPopup("You are here").openPopup();
+        } else {
+            // If the marker exists, move it to the new location
+            userMarker.setLatLng(latlng);
+        }
+
+        // Center the map on the new location
+        map.setView(latlng, map.getZoom());
     }
 
     function onLocationError(e) {
