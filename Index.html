@@ -3,130 +3,50 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Leaflet GPS Location with Target</title>
-
-    <!-- Leaflet CSS and JS -->
-    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
-    <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
-
-    <!-- Web App Manifest -->
-    <link rel="manifest" href="/manifest.json">
-
-    <!-- PWA Metadata -->
-    <meta name="theme-color" content="#ffffff">
-    <meta name="apple-mobile-web-app-capable" content="yes">
-    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
-    <link rel="apple-touch-icon" href="/icons/icon-192x192.png">
-
+    <title>Leaflet JS Location Tracker</title>
+    <!-- Leaflet CSS -->
+    <link rel="stylesheet" href="https://unpkg.com/leaflet/dist/leaflet.css" />
     <style>
         #map {
             height: 100vh;
-            width: 100%;
-            margin: 0;
-        }
-        body, html {
-            margin: 0;
-            padding: 0;
-            height: 100%;
-            width: 100%;
         }
     </style>
 </head>
 <body>
-    <div id="map"></div>
 
-    <script>
-        let map, currentMarker, targetCircle;
-        let targetRadius = 10;
-        let targetLatLng;
+<div id="map"></div>
 
-        function initMap() {
-            map = L.map('map').setView([0, 0], 16);
+<!-- Leaflet JS -->
+<script src="https://unpkg.com/leaflet/dist/leaflet.js"></script>
 
-            L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
-                maxZoom: 19,
-                attribution: '© OpenStreetMap'
-            }).addTo(map);
+<script>
+    // Initialize the map and set view to a default location
+    var map = L.map('map').setView([0, 0], 2);
 
-            if (navigator.geolocation) {
-                navigator.geolocation.watchPosition(updateLocation, handleError, {
-                    enableHighAccuracy: true,
-                    maximumAge: 0,
-                    timeout: 5000
-                });
-            } else {
-                alert("Geolocation is not supported by this browser.");
-            }
-        }
+    // Add a satellite layer to the map using OpenStreetMap
+    L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+        maxZoom: 19
+    }).addTo(map);
 
-        function updateLocation(position) {
-            const lat = position.coords.latitude;
-            const lng = position.coords.longitude;
-            const currentLatLng = [lat, lng];
+    // Add a geolocation tracking feature
+    function onLocationFound(e) {
+        var radius = e.accuracy;
+        L.marker(e.latlng).addTo(map)
+            .bindPopup("You are within " + radius + " meters from this point").openPopup();
+        L.circle(e.latlng, radius).addTo(map);
+    }
 
-            if (!currentMarker) {
-                currentMarker = L.circleMarker(currentLatLng, {
-                    radius: 2,
-                    color: 'green',
-                    fillColor: 'green',
-                    fillOpacity: 1
-                }).addTo(map);
+    function onLocationError(e) {
+        alert(e.message);
+    }
 
-                map.setView(currentLatLng);
+    // Set up map events for location tracking
+    map.on('locationfound', onLocationFound);
+    map.on('locationerror', onLocationError);
 
-                resetTarget(currentLatLng);
-            } else {
-                currentMarker.setLatLng(currentLatLng);
-            }
+    // Start watching the user's location
+    map.locate({setView: true, watch: true, maxZoom: 16});
+</script>
 
-            increaseTargetSize();
-
-            if (map.distance(currentLatLng, targetLatLng) < targetRadius) {
-                resetTarget(currentLatLng);
-            }
-        }
-
-        function handleError(error) {
-            console.warn(`ERROR(${error.code}): ${error.message}`);
-        }
-
-        function resetTarget(currentLatLng) {
-            targetRadius = 10;
-
-            const quarterMileInMeters = 402.336;
-            const randomDistance = Math.random() * quarterMileInMeters;
-            const randomAngle = Math.random() * 2 * Math.PI;
-
-            const offsetLat = randomDistance * Math.cos(randomAngle) / 111320;
-            const offsetLng = randomDistance * Math.sin(randomAngle) / (111320 * Math.cos(currentLatLng[0] * (Math.PI / 180)));
-
-            targetLatLng = [currentLatLng[0] + offsetLat, currentLatLng[1] + offsetLng];
-
-            if (!targetCircle) {
-                targetCircle = L.circle(targetLatLng, {
-                    color: 'red',
-                    fillColor: '#f03',
-                    fillOpacity: 0.5,
-                    radius: targetRadius
-                }).addTo(map);
-            } else {
-                targetCircle.setLatLng(targetLatLng);
-                targetCircle.setRadius(targetRadius);
-            }
-        }
-
-        function increaseTargetSize() {
-            targetRadius += 0.1;
-            targetCircle.setRadius(targetRadius);
-        }
-
-        window.onload = initMap;
-        if ('serviceWorker' in navigator) {
-  navigator.serviceWorker.register('/service-worker.js')
-    .then(reg => console.log('Service worker registered'))
-    .catch(err => console.error('Service worker not registered', err));
-}
-
-    </script>
 </body>
 </html>
