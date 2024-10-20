@@ -1,19 +1,19 @@
 {
-  "name": "Sword and Monster",
-  "short_name": "S&M",
-  "description": "A map-based sword and monster game",
-  "start_url": "/Map.html",
+  "name": "Leaflet GPS Location with Target",
+  "short_name": "GPS Target",
+  "description": "A geolocation game with dynamic targets.",
+  "start_url": "/",
   "display": "standalone",
   "background_color": "#ffffff",
-  "theme_color": "#000000",
+  "theme_color": "#ffffff",
   "icons": [
     {
-      "src": "/images/icon-192x192.png",
+      "src": "/icons/icon-192x192.png",
       "sizes": "192x192",
       "type": "image/png"
     },
-   {
-      "src": "/images/icon-512x512.png",
+    {
+      "src": "/icons/icon-512x512.png",
       "sizes": "512x512",
       "type": "image/png"
     }
