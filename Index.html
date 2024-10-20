@@ -38,7 +38,7 @@
         // If the marker doesn't exist yet, create it
         if (!userMarker) {
             userMarker = L.marker(latlng).addTo(map)
-                .bindPopup("You are here").openPopup();
+                ;
         } else {
             // If the marker exists, move it to the new location
             userMarker.setLatLng(latlng);
