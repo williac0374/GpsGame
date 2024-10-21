@@ -456,6 +456,7 @@ function isMobileBrowser() {
   const userAgent = navigator.userAgent || navigator.vendor || window.opera;
   return /android|avantgo|blackberry|bada|iphone|ipad|ipod|iemobile|opera mini|opera mobi|webos|mobile/i.test(userAgent);
 }
+var testMode = true
 var lat = 40.134995;
 var lon = -91.526652;
 let currentLocation = [lat, lon]; // Default location
@@ -476,9 +477,9 @@ var markers = [];
 var info = "you are here"
 // Function to update the location marker
 function onLocationFound(e) {
-if (isMobileBrowser()) {
-  currentLocation = e.latlng;
-}
+ if(testMode==false){
+   currentLocation = e.latlng;
+ }
 // If the marker doesn't exist yet, create it
 if (!userMarker) {
   userMarker = L.marker(currentLocation).addTo(map)
