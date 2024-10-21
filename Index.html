@@ -48,7 +48,7 @@
         }
         tick ++
         // Center the map on the new location
-        if (tick==1){map.setView(latlng, map.getZoom());}
+        if (tick==1){map.setView(latlng, map.getZoom());alert(map.getZoom())}
     }
 
     function onLocationError(e) {
