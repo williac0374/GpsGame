@@ -42,7 +42,7 @@
         } else {
             // If the marker exists, move it to the new location
             userMarker.setLatLng(latlng);
-            userMarker.setPopupContent(tick)
+            userMarker.setPopupContent(tick).openPopup()
         }
         tick ++
         // Center the map on the new location
