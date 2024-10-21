@@ -37,6 +37,7 @@
         // If the marker doesn't exist yet, create it
         if (!userMarker) {
             userMarker = L.marker(latlng).addTo(map)
+            map.setView(latlng, 16);
             // Create and bind the popup
             userMarker.bindPopup("you are right here").openPopup();
         } else {
@@ -47,8 +48,7 @@
             //uaerMarker.bindPopup("You are here NOW").openPopup();
         }
         tick ++
-        // Center the map on the new location
-        if (tick==1){map.setView(latlng, map.getZoom());alert(map.getZoom())}
+    
     }
 
     function onLocationError(e) {
