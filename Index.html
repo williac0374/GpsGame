@@ -22,7 +22,8 @@
 <script>
     // Initialize the map and set view to a default location
     var map = L.map('map').setView([0, 0], 2);
-
+    var popup = null;
+    var tick = 0;
     // Add a satellite layer to the map using OpenStreetMap
     L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
         maxZoom: 19
@@ -34,8 +35,6 @@
     // Function to update the location marker
     function onLocationFound(e) {
         var latlng = e.latlng;
-        var tick = 0;
-        var popup = null;
         // If the marker doesn't exist yet, create it
         if (!userMarker) {
             userMarker = L.marker(latlng).addTo(map)
