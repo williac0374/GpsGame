@@ -456,9 +456,9 @@ function isMobileBrowser() {
   const userAgent = navigator.userAgent || navigator.vendor || window.opera;
   return /android|avantgo|blackberry|bada|iphone|ipad|ipod|iemobile|opera mini|opera mobi|webos|mobile/i.test(userAgent);
 }
-//var lat = 40.134995;
-//var lon = -91.526652;
-//let currentLocation = [lat, lon]; // Default location
+var lat = 40.134995;
+var lon = -91.526652;
+let currentLocation = [lat, lon]; // Default location
 const move = 0.00005;
 // Initialize the map and set view to a default location
 var map = L.map('map').setView([lat,lon], 19);
@@ -476,10 +476,9 @@ var markers = [];
 var info = "you are here"
 // Function to update the location marker
 function onLocationFound(e) {
-// if (isMobileBrowser()) {
+if (isMobileBrowser()) {
   currentLocation = e.latlng;
-  checkMarkers(8);
-// } 
+}
 // If the marker doesn't exist yet, create it
 if (!userMarker) {
   userMarker = L.marker(currentLocation).addTo(map)
@@ -507,7 +506,7 @@ flags.push({lat:e.latlng.lat,lon:e.latlng.lng})
     color: 'red',
     radius: 6
   }).addTo(map);
-  playPowerupSound();
+  playPowerupSound
 }
 }
 
@@ -536,7 +535,7 @@ map.on('locationerror', onLocationError);
 map.locate({
 watch: true,
 enableHighAccuracy: true, // Request high-accuracy GPS
-timeout: 30000, // Wait up to 10 seconds for a response
+timeout: 10000, // Wait up to 10 seconds for a response
 maximumAge: 0 // Do not use cached location data
 });
 
