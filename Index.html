@@ -35,13 +35,19 @@
     function onLocationFound(e) {
         var latlng = e.latlng;
         var tick = 0;
+        var popup = null;
         // If the marker doesn't exist yet, create it
         if (!userMarker) {
             userMarker = L.marker(latlng).addTo(map)
-                .bindPopup("You are here").openPopup();
+            // Create and bind the popup
+            popup = userMarker.bindPopup("you are right here").openPopup();
         } else {
             // If the marker exists, move it to the new location
             userMarker.setLatLng(latlng);
+            userMarker.closePopup();
+            popup.setContent("now HERE!!");
+            userMarker.openPopup();
+            
             //uaerMarker.bindPopup("You are here NOW").openPopup();
         }
         tick ++
