@@ -64,9 +64,7 @@
 
     // Start watching the user's location with enhanced accuracy settings
     map.locate({
-        setView: false,
         watch: true,
-        maxZoom: 16,
         enableHighAccuracy: true, // Request high-accuracy GPS
         timeout: 10000, // Wait up to 10 seconds for a response
         maximumAge: 0 // Do not use cached location data
