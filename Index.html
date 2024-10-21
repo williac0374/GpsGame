@@ -43,7 +43,7 @@
         } else {
             // If the marker exists, move it to the new location
             userMarker.setLatLng(latlng);
-            userMarker.bindPopup(tick.toString()).openPopup();
+            userMarker.bindPopup(e.coords.accuracy.toString()).openPopup();
             
             //uaerMarker.bindPopup("You are here NOW").openPopup();
         }
