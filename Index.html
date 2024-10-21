@@ -536,7 +536,7 @@ map.on('locationerror', onLocationError);
 map.locate({
 watch: true,
 enableHighAccuracy: true, // Request high-accuracy GPS
-timeout: 10000, // Wait up to 10 seconds for a response
+timeout: 30000, // Wait up to 10 seconds for a response
 maximumAge: 0 // Do not use cached location data
 });
 
