@@ -478,7 +478,6 @@ var info = "you are here"
 function onLocationFound(e) {
 if (isMobileBrowser()) {
   currentLocation = e.latlng;
-  
 }
 // If the marker doesn't exist yet, create it
 if (!userMarker) {
@@ -489,7 +488,7 @@ if (!userMarker) {
 } else {
   // If the marker exists, move it to the new location
   userMarker.setLatLng(currentLocation);
-//checkMarkers(8);
+
   
   //uaerMarker.bindPopup("You are here NOW").openPopup();
 }
