@@ -34,6 +34,7 @@
     // Function to update the location marker
     function onLocationFound(e) {
         var latlng = e.latlng;
+        
         // If the marker doesn't exist yet, create it
         if (!userMarker) {
             userMarker = L.marker(latlng).addTo(map)
@@ -41,6 +42,7 @@
             // Create and bind the popup
             userMarker.bindPopup(info).openPopup();
         } else {
+            alert (latlng)
             // If the marker exists, move it to the new location
             userMarker.setLatLng(latlng);
             let acc = e.coords.accuracy
