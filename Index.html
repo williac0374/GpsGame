@@ -30,7 +30,7 @@
 
     // Declare a variable to hold the user's marker
     var userMarker = null;
-
+    var info = "you are here"
     // Function to update the location marker
     function onLocationFound(e) {
         var latlng = e.latlng;
@@ -39,7 +39,7 @@
             userMarker = L.marker(latlng).addTo(map)
             map.setView(latlng, 16);
             // Create and bind the popup
-            userMarker.bindPopup("you are right here").openPopup();
+            userMarker.bindPopup(info).openPopup();
         } else {
             // If the marker exists, move it to the new location
             userMarker.setLatLng(latlng);
