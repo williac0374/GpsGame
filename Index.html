@@ -476,10 +476,10 @@ var markers = [];
 var info = "you are here"
 // Function to update the location marker
 function onLocationFound(e) {
-if (isMobileBrowser()) {
+// if (isMobileBrowser()) {
   currentLocation = e.latlng;
   checkMarkers(8);
-}
+// } 
 // If the marker doesn't exist yet, create it
 if (!userMarker) {
   userMarker = L.marker(currentLocation).addTo(map)
