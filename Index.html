@@ -23,11 +23,10 @@
     // Initialize the map and set view to a default location
     var map = L.map('map').setView([0, 0], 2);
 
-    // Add OpenStreetMap tiles
-                L.tileLayer('https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}', {
-                    maxZoom: 19,
-                    attribution: 'Tiles © Esri &mdash; Source: Esri, i-cubed, USDA, USGS, AEX, GeoEye, Getmapping, Aerogrid, IGN, IGP, UPR-EGP, and the GIS User Community'
-                }).addTo(map);
+    // Add a satellite layer to the map using OpenStreetMap
+    L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+        maxZoom: 19
+    }).addTo(map);
 
     // Declare a variable to hold the user's marker
     var userMarker = null;
@@ -39,7 +38,7 @@
         // If the marker doesn't exist yet, create it
         if (!userMarker) {
             userMarker = L.marker(latlng).addTo(map)
-                ;
+                .bindPopup("You are here").openPopup();
         } else {
             // If the marker exists, move it to the new location
             userMarker.setLatLng(latlng);
@@ -57,8 +56,15 @@
     map.on('locationfound', onLocationFound);
     map.on('locationerror', onLocationError);
 
-    // Start watching the user's location
-    map.locate({setView: true, watch: true, maxZoom: 16});
+    // Start watching the user's location with enhanced accuracy settings
+    map.locate({
+        setView: true,
+        watch: true,
+        maxZoom: 16,
+        enableHighAccuracy: true, // Request high-accuracy GPS
+        timeout: 10000, // Wait up to 10 seconds for a response
+        maximumAge: 0 // Do not use cached location data
+    });
 </script>
 
 </body>
