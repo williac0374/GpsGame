@@ -456,9 +456,9 @@ function isMobileBrowser() {
   const userAgent = navigator.userAgent || navigator.vendor || window.opera;
   return /android|avantgo|blackberry|bada|iphone|ipad|ipod|iemobile|opera mini|opera mobi|webos|mobile/i.test(userAgent);
 }
-var lat = 40.134995;
-var lon = -91.526652;
-let currentLocation = [lat, lon]; // Default location
+//var lat = 40.134995;
+//var lon = -91.526652;
+//let currentLocation = [lat, lon]; // Default location
 const move = 0.00005;
 // Initialize the map and set view to a default location
 var map = L.map('map').setView([lat,lon], 19);
