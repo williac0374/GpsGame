@@ -101,9 +101,9 @@ map.on('locationerror', onLocationError);
 // Start watching the user's location with enhanced accuracy settings
 map.locate({
 watch: true,
-enableHighAccuracy: true, // Request high-accuracy GPS
-timeout: 10000, // Wait up to 10 seconds for a response
-maximumAge: 1000 // Do not use cached location data
+enableHighAccuracy: false, // Request high-accuracy GPS
+timeout: 20000, // Wait up to 10 seconds for a response
+maximumAge: 0 // Do not use cached location data
 });
 
 // Move the map using arrow keys
