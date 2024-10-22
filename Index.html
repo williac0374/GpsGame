@@ -48,10 +48,10 @@ var markers = [];
 var info = "you are here"
 // Function to update the location marker
 function onLocationFound(e) {
- if(testMode==false){
+
    currentLocation = e.latlng;
    checkMarkers(12);
- }
+ 
 // If the marker doesn't exist yet, create it
 if (!userMarker) {
   userMarker = L.marker(currentLocation).addTo(map)
