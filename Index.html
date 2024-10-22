@@ -109,7 +109,7 @@ var distance = pointA.distanceTo(pointB);
 return distance <= meters;
 }
 // Function to detect touch events on mobile devices
-userMarker.on('click', function(e) {
+map.on('click', function(e) {
     // Check if the event is a touch event
     if (e.originalEvent.touches) {
         alert('hello');
