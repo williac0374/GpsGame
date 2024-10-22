@@ -50,7 +50,7 @@
 			map.setView([lat, lon], map.getZoom());
 			firstPing=true;
 		}
-		checkMarkers(100);
+		checkMarkers(lat,lon,100);
 
         // Optionally log the accuracy
         console.log(`Location Accuracy: ${accuracy} meters`);
@@ -87,8 +87,8 @@
   } 
 }
 allPoints()
-function checkMarkers(dis){
-	alert(dis);
+function checkMarkers(lat,lon,dis){
+	alert(lat);
 	for (let i = 0; i < markers.length; i++) {
 	  if (proximity(markers[i]._latlng.lat, markers[i]._latlng.lng, lat, lon,dis)){
 	  map.removeLayer(markers[i]);
