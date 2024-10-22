@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Leaflet JS Location Tracker</title>
+<title>GPS WALK MAN</title>
 <!-- Leaflet CSS -->
 <link rel="stylesheet" href="https://unpkg.com/leaflet/dist/leaflet.css" />
 <style>
@@ -50,8 +50,7 @@ var info = "you are here"
 function onLocationFound(e) {
  if(testMode==false){
    currentLocation = e.latlng;
-   alert("PING");
-   checkMarkers(12);
+   //checkMarkers(12);
  }
 // If the marker doesn't exist yet, create it
 if (!userMarker) {
@@ -74,7 +73,7 @@ flags.push({lat:e.latlng.lat,lon:e.latlng.lng})
     color: 'red',
     radius: 6
   }).addTo(map);
-  //playPowerupSound
+  
 }
 }
 
@@ -102,9 +101,9 @@ map.on('locationerror', onLocationError);
 // Start watching the user's location with enhanced accuracy settings
 map.locate({
 watch: true,
-enableHighAccuracy: false, // Request high-accuracy GPS
-timeout: 30000, // Wait up to 10 seconds for a response
-maximumAge: 0 // Do not use cached location data
+enableHighAccuracy: true, // Request high-accuracy GPS
+timeout: 10000, // Wait up to 10 seconds for a response
+maximumAge: 1000 // Do not use cached location data
 });
 
 // Move the map using arrow keys
