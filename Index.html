@@ -88,6 +88,7 @@
 }
 allPoints()
 function checkMarkers(dis){
+	alert(lat);
 	for (let i = 0; i < markers.length; i++) {
 	  if (proximity(markers[i]._latlng.lat, markers[i]._latlng.lng, lat, lon,dis)){
 	  map.removeLayer(markers[i]);
