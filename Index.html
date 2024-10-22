@@ -13,7 +13,6 @@
     </style>
 </head>
 <body>
-<audio id="powerupSound" src="Powerup.mp3" preload="auto"></audio>
 <div id="map"></div>
 
 <script src="https://unpkg.com/leaflet/dist/leaflet.js"></script>
@@ -34,12 +33,7 @@ h-a)/c)*k[a-c|0]/2/p):f,N?f=W=S*T+Q*(T=U)+P*(U=f)-Y*V-X*(V=W):0),x=(b+=u+=y)*M.c
 H++),g+=x+x*E*Z(a**5),n&&++n>z&&(b+=v,C+=v,n=0),!l||++I%l||(b=C,u=G,n=n||1);p=zzfxX.
 createBuffer(1,h,R);p.getChannelData(0).set(k);b=zzfxX.createBufferSource();
 b.buffer=p;b.connect(zzfxX.destination);b.start()}
-    var firstPing=false
-    function playPowerupSound() {
-    const sound = document.getElementById('powerupSound');
-    sound.currentTime = 0; // Reset the sound to the beginning
-    sound.play(); // Play the sound
-}
+    var firstPing=false;
     var lat = 40.134995;
     var lon = -91.526652;
     const map = L.map('map').setView([lat, lon], 16);
@@ -110,7 +104,7 @@ function checkMarkers(lat,lon,dis){
 	  if (proximity(markers[i]._latlng.lat, markers[i]._latlng.lng, lat, lon,dis)){
 	  map.removeLayer(markers[i]);
 		markers.splice(i,1)
-		playPowerupSound();
+		zzfx(...[,,408,.01,.08,.17,,3.3,40,-31,,,,.7,,.1,,.81,.08]);
 	  }
 	}
 }
