@@ -167,7 +167,8 @@ for (let i = 0; i < flags.length; i++) {
 function checkMarkers(dis){
 for (let i = 0; i < markers.length; i++) {
   if (proximity(markers[i]._latlng.lat, markers[i]._latlng.lng, currentLocation[0], currentLocation[1],dis)){
-  map.removeLayer(markers[i]);
+   alert("ping");
+    map.removeLayer(markers[i]);
     markers.splice(i,1)
     playPowerupSound();
   }
