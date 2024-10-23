@@ -17,17 +17,17 @@
             padding: 20px;
         }
 
-        /* Dimming overlay, initially hidden */
+        /* Dimming overlay, now with no transparency */
         #dimOverlay {
             position: fixed;
             top: 0;
             left: 0;
             width: 100vw;
             height: 100vh;
-            background-color: rgba(0, 0, 0, 1.0); /* Dark overlay with transparency */
+            background-color: black; /* Solid black color */
             display: none;
             z-index: 1000; /* Ensure it is on top */
-            /*pointer-events: none;  Allows interaction with underlying elements */
+            pointer-events: auto; /* Enable interaction to detect touch/click */
         }
 
         button {
@@ -42,10 +42,9 @@
 
 <h1>Hello, World!</h1>
 <button onclick="startFullscreen()">Go Fullscreen & Dim Screen</button>
-<button onclick="restoreScreen()">Restore Screen</button>
 
 <!-- Fullscreen overlay for dimming -->
-<div id="dimOverlay" onclick="restoreScreen()"></div>
+<div id="dimOverlay" onclick="hideOverlay()"></div>
 
 <script>
     let wakeLock = null;
@@ -89,24 +88,10 @@
         requestWakeLock();
     }
 
-    // Function to exit fullscreen and remove the dimming effect
-    function restoreScreen() {
-        // Exit Fullscreen
-        if (document.exitFullscreen) {
-            document.exitFullscreen();
-        } else if (document.mozCancelFullScreen) { // Firefox
-            document.mozCancelFullScreen();
-        } else if (document.webkitExitFullscreen) { // Chrome, Safari, and Opera
-            document.webkitExitFullscreen();
-        } else if (document.msExitFullscreen) { // IE/Edge
-            document.msExitFullscreen();
-        }
-
-        // Hide the dimming overlay
+    // Function to hide the overlay but keep fullscreen
+    function hideOverlay() {
         document.getElementById('dimOverlay').style.display = 'none';
-
-        // Release the wake lock
-        releaseWakeLock();
+        // Wake lock remains active; fullscreen remains active
     }
 
     // Automatically release wake lock when page visibility changes (optional safeguard)
