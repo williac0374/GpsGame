@@ -27,7 +27,7 @@
             background-color: rgba(0, 0, 0, 1.0); /* Dark overlay with transparency */
             display: none;
             z-index: 1000; /* Ensure it is on top */
-            pointer-events: none; /* Allows interaction with underlying elements */
+            /*pointer-events: none;  Allows interaction with underlying elements */
         }
 
         button {
@@ -45,7 +45,7 @@
 <button onclick="restoreScreen()">Restore Screen</button>
 
 <!-- Fullscreen overlay for dimming -->
-<div id="dimOverlay"></div>
+<div id="dimOverlay" onclick="restoreScreen()"></div>
 
 <script>
     let wakeLock = null;
