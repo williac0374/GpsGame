@@ -5,9 +5,36 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Dim Screen Simulation</title>
     <style>
+        /* Basic styles for the page */
         body {
+            margin: 0;
+            font-family: Arial, sans-serif;
             background-color: white;
-            transition: filter 0.5s ease; /* Smooth transition for dimming */
+            transition: filter 0.5s ease;
+        }
+
+        h1 {
+            padding: 20px;
+        }
+
+        /* Dimming overlay, initially hidden */
+        #dimOverlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100vw;
+            height: 100vh;
+            background-color: rgba(0, 0, 0, 0.7); /* Dark overlay with transparency */
+            display: none;
+            z-index: 1000; /* Ensure it is on top */
+            pointer-events: none; /* Allows interaction with underlying elements */
+        }
+
+        button {
+            padding: 10px 20px;
+            font-size: 16px;
+            margin: 20px;
+            z-index: 1001; /* Ensure buttons are above overlay */
         }
     </style>
 </head>
@@ -17,15 +44,18 @@
 <button onclick="dimScreen()">Dim Screen</button>
 <button onclick="restoreScreen()">Restore Screen</button>
 
+<!-- Fullscreen overlay for dimming -->
+<div id="dimOverlay"></div>
+
 <script>
     function dimScreen() {
-        // Reduce the brightness of the entire page
-        document.body.style.filter = 'brightness(30%)';
+        // Show the dimming overlay
+        document.getElementById('dimOverlay').style.display = 'block';
     }
 
     function restoreScreen() {
-        // Restore the brightness of the page
-        document.body.style.filter = 'brightness(100%)';
+        // Hide the dimming overlay
+        document.getElementById('dimOverlay').style.display = 'none';
     }
 </script>
 
