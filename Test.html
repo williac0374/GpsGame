@@ -1,0 +1,33 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dim Screen Simulation</title>
+    <style>
+        body {
+            background-color: white;
+            transition: filter 0.5s ease; /* Smooth transition for dimming */
+        }
+    </style>
+</head>
+<body>
+
+<h1>Hello, World!</h1>
+<button onclick="dimScreen()">Dim Screen</button>
+<button onclick="restoreScreen()">Restore Screen</button>
+
+<script>
+    function dimScreen() {
+        // Reduce the brightness of the entire page
+        document.body.style.filter = 'brightness(30%)';
+    }
+
+    function restoreScreen() {
+        // Restore the brightness of the page
+        document.body.style.filter = 'brightness(100%)';
+    }
+</script>
+
+</body>
+</html>
