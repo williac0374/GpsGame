@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Dim Screen Simulation</title>
+    <title>Dim Screen Simulation with Fullscreen & Wake Lock</title>
     <style>
         /* Basic styles for the page */
         body {
@@ -41,22 +41,80 @@
 <body>
 
 <h1>Hello, World!</h1>
-<button onclick="dimScreen()">Dim Screen</button>
+<button onclick="startFullscreen()">Go Fullscreen & Dim Screen</button>
 <button onclick="restoreScreen()">Restore Screen</button>
 
 <!-- Fullscreen overlay for dimming -->
 <div id="dimOverlay"></div>
 
 <script>
-    function dimScreen() {
-        // Show the dimming overlay
-        document.getElementById('dimOverlay').style.display = 'block';
+    let wakeLock = null;
+
+    // Request Wake Lock
+    async function requestWakeLock() {
+        try {
+            wakeLock = await navigator.wakeLock.request('screen');
+            console.log('Wake lock active');
+        } catch (err) {
+            console.error(`Failed to acquire wake lock: ${err.name}, ${err.message}`);
+        }
     }
 
+    // Release Wake Lock
+    function releaseWakeLock() {
+        if (wakeLock !== null) {
+            wakeLock.release();
+            wakeLock = null;
+            console.log('Wake lock released');
+        }
+    }
+
+    // Function to go fullscreen and dim the screen
+    function startFullscreen() {
+        // Request Fullscreen
+        if (document.documentElement.requestFullscreen) {
+            document.documentElement.requestFullscreen();
+        } else if (document.documentElement.mozRequestFullScreen) { // Firefox
+            document.documentElement.mozRequestFullScreen();
+        } else if (document.documentElement.webkitRequestFullscreen) { // Chrome, Safari, and Opera
+            document.documentElement.webkitRequestFullscreen();
+        } else if (document.documentElement.msRequestFullscreen) { // IE/Edge
+            document.documentElement.msRequestFullscreen();
+        }
+
+        // Show the dimming overlay
+        document.getElementById('dimOverlay').style.display = 'block';
+
+        // Request wake lock to keep the screen on
+        requestWakeLock();
+    }
+
+    // Function to exit fullscreen and remove the dimming effect
     function restoreScreen() {
+        // Exit Fullscreen
+        if (document.exitFullscreen) {
+            document.exitFullscreen();
+        } else if (document.mozCancelFullScreen) { // Firefox
+            document.mozCancelFullScreen();
+        } else if (document.webkitExitFullscreen) { // Chrome, Safari, and Opera
+            document.webkitExitFullscreen();
+        } else if (document.msExitFullscreen) { // IE/Edge
+            document.msExitFullscreen();
+        }
+
         // Hide the dimming overlay
         document.getElementById('dimOverlay').style.display = 'none';
+
+        // Release the wake lock
+        releaseWakeLock();
     }
+
+    // Automatically release wake lock when page visibility changes (optional safeguard)
+    document.addEventListener('visibilitychange', () => {
+        if (document.visibilityState === 'hidden') {
+            releaseWakeLock();
+        }
+    });
 </script>
 
 </body>
