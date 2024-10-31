@@ -1,117 +1,79 @@
-<!doctype html>
-<html>
-    <head>
-        <style>
-            /* CSS for Android Messenger-like style */
-            body {
-                font-family: Arial, sans-serif;
-                background-color: #ECE5DD;
-                display: flex;
-                flex-direction: column;
-                align-items: center;
-                margin: 0;
-                padding: 0;
-                height: 100vh;
-            }
-
-            h2 {
-                color: #075E54;
-                margin-top: 20px;
-            }
-
-            #container {
-                background-color: #FFFFFF;
-                box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.2);
-                width: 90%;
-                max-width: 600px;
-                border-radius: 8px;
-                padding: 20px;
-                margin-top: 20px;
-                box-sizing: border-box;
-            }
-
-            p {
-                color: #3C4043;
-            }
-
-            button {
-                padding: 12px 20px;
-                background-color: #25D366;
-                color: #FFFFFF;
-                border: none;
-                border-radius: 50px;
-                font-size: 16px;
-                font-weight: bold;
-                cursor: pointer;
-                display: inline-flex;
-                align-items: center;
-                justify-content: center;
-                margin-top: 10px;
-            }
-
-            #output {
-                background-color: #DCF8C6;
-                color: #333333;
-                padding: 15px;
-                width: 100%;
-                margin-top: 20px;
-                border-radius: 15px;
-                line-height: 1.6;
-                font-size: 16px;
-                box-shadow: 0px 2px 4px rgba(0, 0, 0, 0.1);
-                word-wrap: break-word;
-                display: none;
-            }
-
-            #output.show {
-                display: block;
-            }
-
-            #action {
-                font-size: 14px;
-                color: #888888;
-                margin-left: 10px;
-            }
-        </style>
-        <title>JavaScript Speech to Text</title>
-    </head>
-    <body>
-        <div id="container">
-            <h2>Speech to Text</h2>
-            <p>Click on the button below and start speaking...</p>
-            <p>
-                <button type="button" onclick="runSpeechRecognition()">🎙️ Start Recording</button>
-                <span id="action"></span>
-            </p>
-            <div id="output"></div>
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Mobile Messaging App</title>
+    <style>
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: #f1f1f1;
+            padding: 10px;
+        }
+        .chat-container {
+            width: 100vw;
+            height: 100vh;
+            display: flex;
+            flex-direction: column;
+        }
+        .chat-header {
+            padding: 10px;
+            background-color: #3c80e8;
+            color: white;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            border-top-left-radius: 20px;
+            border-top-right-radius: 20px;
+        }
+        .chat-input {
+            border: none;
+            padding: 10px;
+            margin-top: 10px;
+            border-radius: 10px;
+            font-size: 16px;
+            background-color: white;
+            margin-left: 10px;
+            margin-right: 10px;
+        }
+        .send-button {
+            padding: 10px;
+            margin-top: 5px;
+            margin-right: 10px;
+            border: none;
+            background-color: #3c80e8;
+            color: white;
+            font-weight: bold;
+            border-radius: 10px;
+        }
+        .message {
+            padding: 10px;
+            margin: 10px 0;
+            border-radius: 10px;
+            display: flex;
+            align-items: center;
+            max-width: 80vw;
+            word-wrap: break-word;
+        }
+        .user-message {
+            background-color: #f5f5f5;
+            align-self: flex-start;
+        }
+        .contact-message {
+            background-color: #e0e0e0;
+            align-self: flex-end;
+        }
+    </style>
+</head>
+<body>
+    <div class="chat-container">
+        <div class="chat-header">
+            <h1>Chat</h1>
+            <input type="text" placeholder="Search..." class="chat-input">
         </div>
-        <script>
-            /* JavaScript for Speech Recognition */
-            function runSpeechRecognition() {
-                var output = document.getElementById("output");
-                var action = document.getElementById("action");
-                
-                var SpeechRecognition = SpeechRecognition || webkitSpeechRecognition;
-                var recognition = new SpeechRecognition();
-
-                recognition.onstart = function() {
-                    action.innerHTML = "<small>Listening, please speak...</small>";
-                };
-
-                recognition.onspeechend = function() {
-                    action.innerHTML = "<small>Stopped listening...</small>";
-                    recognition.stop();
-                }
-
-                recognition.onresult = function(event) {
-                    var transcript = event.results[0][0].transcript;
-                    var confidence = event.results[0][0].confidence;
-                    output.innerHTML = "<b>Text:</b> " + transcript + "<br/> <b>Confidence:</b> " + (confidence * 100).toFixed(2) + "%";
-                    output.classList.add("show");
-                };
-
-                recognition.start();
-            }
-        </script>
-    </body>
-</html>
+        <div id="chat-messages"></div>
+        <div class="message-input-container">
+            <input type="text" placeholder="Type your message..." class="chat-input"></input>
+            <button class="send-button">Send</button>
+        </div>
+    </div>
+</body>
