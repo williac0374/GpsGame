@@ -40,6 +40,50 @@
         const speakButton = document.getElementById('speakButton');
         const output = document.getElementById('output');
 
-        // Speech recognition setup
+        // Check if Speech Recognition is supported
         let recognition;
-        if ('webkitS
+        if ('webkitSpeechRecognition' in window) {
+            recognition = new webkitSpeechRecognition();
+            recognition.continuous = false;
+            recognition.interimResults = false;
+            recognition.lang = 'en-US';
+
+            recognition.onstart = () => {
+                output.textContent = "Listening...";
+            };
+
+            recognition.onresult = (event) => {
+                const speechResult = event.results[0][0].transcript;
+                output.textContent = "You said: " + speechResult;
+            };
+
+            recognition.onerror = (event) => {
+                output.textContent = "Error occurred in recognition: " + event.error;
+                console.error("Speech Recognition Error:", event.error);
+            };
+
+            recognition.onend = () => {
+                output.textContent = "Recognition ended.";
+            };
+        } else {
+            alert("Speech recognition is not supported in this browser. Try using Chrome.");
+        }
+
+        // Button events to start and stop recognition
+        speakButton.onmousedown = () => {
+            if (recognition) {
+                recognition.start();
+            } else {
+                output.textContent = "Speech recognition is not available.";
+            }
+        };
+
+        speakButton.onmouseup = () => {
+            if (recognition) {
+                recognition.stop();
+            }
+        };
+    </script>
+
+</body>
+</html>
