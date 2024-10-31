@@ -1,71 +1,117 @@
 <!doctype html>
-	<head>
-		<style>
-			/* CSS comes here */
-			body {
-			    font-family: arial;
-			}
-			button {
-			    padding:10px;
-			    background-color:#6a67ce;
-			    color: #FFFFFF;
-			    border: 0px;
-			    cursor:pointer;
-			    border-radius: 5px;
-			}
-			#output {
-			    background-color:#F9F9F9;
-			    padding:10px;
-			    width: 100%;
-			    margin-top:20px;
-			    line-height:30px;
-			}
-			.hide {
-			    display:none;
-			}
-			.show {
-			    display:block;
-			}
-		</style>
-		<title>JavaScript Speech to Text</title>
-	</head>
-	<body>
-		<h2>JavaScript Speech to Text</h2>
-        <p>Click on the below button and speak something...</p>
-        <p><button type="button" onclick="runSpeechRecognition()">Speech to Text</button> &nbsp; <span id="action"></span></p>
-        <div id="output" class="hide"></div>
-		<script>
-			/* JS comes here */
-		    function runSpeechRecognition() {
-		        // get output div reference
-		        var output = document.getElementById("output");
-		        // get action element reference
-		        var action = document.getElementById("action");
-                // new speech recognition object
+<html>
+    <head>
+        <style>
+            /* CSS for Android Messenger-like style */
+            body {
+                font-family: Arial, sans-serif;
+                background-color: #ECE5DD;
+                display: flex;
+                flex-direction: column;
+                align-items: center;
+                margin: 0;
+                padding: 0;
+                height: 100vh;
+            }
+
+            h2 {
+                color: #075E54;
+                margin-top: 20px;
+            }
+
+            #container {
+                background-color: #FFFFFF;
+                box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.2);
+                width: 90%;
+                max-width: 600px;
+                border-radius: 8px;
+                padding: 20px;
+                margin-top: 20px;
+                box-sizing: border-box;
+            }
+
+            p {
+                color: #3C4043;
+            }
+
+            button {
+                padding: 12px 20px;
+                background-color: #25D366;
+                color: #FFFFFF;
+                border: none;
+                border-radius: 50px;
+                font-size: 16px;
+                font-weight: bold;
+                cursor: pointer;
+                display: inline-flex;
+                align-items: center;
+                justify-content: center;
+                margin-top: 10px;
+            }
+
+            #output {
+                background-color: #DCF8C6;
+                color: #333333;
+                padding: 15px;
+                width: 100%;
+                margin-top: 20px;
+                border-radius: 15px;
+                line-height: 1.6;
+                font-size: 16px;
+                box-shadow: 0px 2px 4px rgba(0, 0, 0, 0.1);
+                word-wrap: break-word;
+                display: none;
+            }
+
+            #output.show {
+                display: block;
+            }
+
+            #action {
+                font-size: 14px;
+                color: #888888;
+                margin-left: 10px;
+            }
+        </style>
+        <title>JavaScript Speech to Text</title>
+    </head>
+    <body>
+        <div id="container">
+            <h2>Speech to Text</h2>
+            <p>Click on the button below and start speaking...</p>
+            <p>
+                <button type="button" onclick="runSpeechRecognition()">🎙️ Start Recording</button>
+                <span id="action"></span>
+            </p>
+            <div id="output"></div>
+        </div>
+        <script>
+            /* JavaScript for Speech Recognition */
+            function runSpeechRecognition() {
+                var output = document.getElementById("output");
+                var action = document.getElementById("action");
+                
                 var SpeechRecognition = SpeechRecognition || webkitSpeechRecognition;
                 var recognition = new SpeechRecognition();
-            
-                // This runs when the speech recognition service starts
+
                 recognition.onstart = function() {
-                    action.innerHTML = "<small>listening, please speak...</small>";
+                    action.innerHTML = "<small>Listening, please speak...</small>";
                 };
-                
+
                 recognition.onspeechend = function() {
-                    action.innerHTML = "<small>stopped listening, hope you are done...</small>";
+                    action.innerHTML = "<small>Stopped listening...</small>";
                     recognition.stop();
                 }
-              
-                // This runs when the speech recognition service returns result
+
                 recognition.onresult = function(event) {
                     var transcript = event.results[0][0].transcript;
                     var confidence = event.results[0][0].confidence;
-                    output.innerHTML = "<b>Text:</b> " + transcript + "<br/> <b>Confidence:</b> " + confidence*100+"%";
-                    output.classList.remove("hide");
+                    output.innerHTML = "<b>Text:</b> " + transcript + "<br/> <b>Confidence:</b> " + (confidence * 100).toFixed(2) + "%";
+                    output.classList.add("show");
                 };
-              
-                 // start recognition
-                 recognition.start();
-	        }
-		</script>
-	</body>
+
+                recognition.start();
+            }
+        </script>
+    </body>
 </html>
