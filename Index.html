@@ -3,39 +3,62 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Mobile Web Layout</title>
     <style>
-        body {
+        /* Ensure the body and main container div take up the full viewport */
+        body, html {
             margin: 0;
             padding: 0;
-            background-color: gray;
-            overflow: hidden;
-        }
-        .container {
-            width: 90vw;
-            height: 80vh;
-            margin: 0 auto;
-            background-color: black;
+            height: 100vh;
             display: flex;
             justify-content: center;
             align-items: center;
         }
-        .button {
-            border-radius: 5px;
-            width: 98vw;
-            height: calc(20vh - 4px);
-            padding: 10px;
-            font-size: 2rem;
-            color: white;
-            background-color: blue;
+
+        /* Main container taking up 98% of viewport height */
+        .container {
+            height: 98vh;
+            width: 100vw;
             display: flex;
-            text-align: center;
-            font-weight: bold;
+            flex-direction: column;
+        }
+
+        /* Grey area taking up the top 90% */
+        .content {
+            flex: 9;
+            background-color: #cccccc;
+        }
+
+        /* Button area taking up the bottom 10% */
+        .button-container {
+            flex: 1;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+
+        /* Button styling */
+        .talk-button {
+            padding: 10px 20px;
+            font-size: 1.2em;
+            color: #ffffff;
+            background-color: #4CAF50;
+            border: none;
+            border-radius: 25px;
+            cursor: pointer;
+        }
+
+        .talk-button:active {
+            background-color: #45a049; /* Slightly darker green on click */
         }
     </style>
 </head>
 <body>
     <div class="container">
-        <button class="button">Send</button>
+        <div class="content"></div>
+        <div class="button-container">
+            <button class="talk-button">TALK</button>
+        </div>
     </div>
 </body>
 </html>
