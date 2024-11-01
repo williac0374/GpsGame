@@ -57,10 +57,17 @@
 </head>
 <body>
     <div class="container">
-        <div class="content"></div>
+        <div class="content" id="main"></div>
         <div class="button-container">
             <button class="talk-button">{ { TALK } } }</button>
         </div>
     </div>
+    <script>
+function talk(){
+   const div = document.getElementById("main");
+   const textNode = document.createTextNode("Hello, World!");
+   div.appendChild(textNode);
+}
+    </script>
 </body>
 </html>
